@@ -246,7 +246,7 @@
         }
 
         function shareGame() {
-            const shareText = `🍻🏀 Sfidami al torneo ufficiale di BEER PONG del 27 Luglio a Calabritto! 🍻🏀`;
+            const shareText = `🍻 Sfidami al torneo ufficiale di BEER PONG del 27 Luglio a Calabritto! 🍻`;
             if (navigator.share) {
                 navigator.share({ title: 'Festival Beer Pong', text: shareText, url: window.location.href }).catch(console.error);
             } else {
