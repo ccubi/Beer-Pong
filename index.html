@@ -35,7 +35,7 @@
         .btn-reset { background: #444; color: #fff; font-weight: bold; border: none; padding: 6px 12px; border-radius: 12px; cursor: pointer; text-transform: uppercase; font-size: 0.75em; }
         
         /* SCREEN FINE GIOCO */
-        .popup-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 10, 15, 0.98); display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 15px; z-index: 10; }
+        .popup-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(10, 10, 15, 0.98); display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 15px; z-index: 999; }
         .popup-screen h2 { color: #ffb703; font-size: 1.8em; margin-bottom: 2px; font-weight: 900; }
         
         /* LOGO FORUM */
@@ -81,9 +81,10 @@
             </div>
             <h2>MAGO DEL RIMBALZO! 🏆</h2>
             <p style="font-size: 0.8em; color: #ccc; margin-bottom: 2px;">Tavolo svuotato in <span id="finalShots" style="color: #ffb703; font-weight: bold;">0</span> tiri!</p>
+            <p id="starRating" style="font-size: 1.4em; margin-bottom: 4px; letter-spacing: 2px;">⭐⭐⭐</p>
             
             <div class="promo-box">
-                <p class="promo-text">Sfida un amico al torneo ufficiale di Beer Pong<span class="promo-highlight">del 25 Luglio a Calabritto!</span></p>
+                <p class="promo-text">Sfida un amico al torneo ufficiale di Beer Pong<span class="promo-highlight">del 27 Luglio a Calabritto!</span></p>
             </div>
 
             <div class="btn-group">
@@ -125,10 +126,15 @@
         let hasBounced = false; // Controlla se la pallina ha effettuato il rimbalzo obbligatorio
         
         let targetAim = { x: 0, z: 240 }; // Mirino di default a metà tavolo
+        let frameCount = 0;
 
         const GRAVITY = 0.32;
         const TABLE_Z_START = 80;
         const TABLE_Z_END = 490;
+        const Z_DEPTH_RANGE = TABLE_Z_END + 80; // profondità totale mappata sull'altezza del canvas
+        const LAUNCH_COEF = 1 / 46; // frame necessari alla pallina per scendere a y=0 dato vy iniziale fisso
+        const WOBBLE_AMPLITUDE = 9; // ampiezza oscillazione bicchieri (unità di mondo)
+        const WOBBLE_SPEED = 0.035; // velocità oscillazione
 
         const SOCIAL_LINKS = {
             instagram: 'https://www.instagram.com/', 
@@ -150,12 +156,12 @@
             const zRow3 = 355;
             const cRadius = 26;
             
-            cups.push({ x: -52, y: 0, z: zRow1, r: cRadius, active: true });
-            cups.push({ x: 0,   y: 0, z: zRow1, r: cRadius, active: true });
-            cups.push({ x: 52,  y: 0, z: zRow1, r: cRadius, active: true });
-            cups.push({ x: -26, y: 0, z: zRow2, r: cRadius, active: true });
-            cups.push({ x: 26,  y: 0, z: zRow2, r: cRadius, active: true });
-            cups.push({ x: 0,   y: 0, z: zRow3, r: cRadius, active: true });
+            cups.push({ baseX: -52, x: -52, y: 0, z: zRow1, r: cRadius, active: true, phase: Math.random()*Math.PI*2 });
+            cups.push({ baseX: 0,   x: 0,   y: 0, z: zRow1, r: cRadius, active: true, phase: Math.random()*Math.PI*2 });
+            cups.push({ baseX: 52,  x: 52,  y: 0, z: zRow1, r: cRadius, active: true, phase: Math.random()*Math.PI*2 });
+            cups.push({ baseX: -26, x: -26, y: 0, z: zRow2, r: cRadius, active: true, phase: Math.random()*Math.PI*2 });
+            cups.push({ baseX: 26,  x: 26,  y: 0, z: zRow2, r: cRadius, active: true, phase: Math.random()*Math.PI*2 });
+            cups.push({ baseX: 0,   x: 0,   y: 0, z: zRow3, r: cRadius, active: true, phase: Math.random()*Math.PI*2 });
         }
 
         function resetBall() {
@@ -182,7 +188,14 @@
             document.getElementById('shotsFired').textContent = shots;
             if(active === 0 && !isGameOver) {
                 isGameOver = true;
-                setTimeout(() => { gameOverScreen.style.display = 'flex'; document.getElementById('finalShots').textContent = shots; }, 500);
+                setTimeout(() => {
+                    gameOverScreen.style.display = 'flex';
+                    document.getElementById('finalShots').textContent = shots;
+                    let stars = '⭐⭐⭐';
+                    if (shots > 12) stars = '⭐';
+                    else if (shots > 8) stars = '⭐⭐';
+                    document.getElementById('starRating').textContent = stars;
+                }, 500);
             }
         }
 
@@ -214,8 +227,8 @@
             const zDiff = targetAim.z - ball.z;
             
             // Calcolo matematico per far atterrare la pallina esattamente sul mirino per il primo rimbalzo
-            ball.vx = (targetAim.x - ball.x) * 0.04;
-            ball.vz = zDiff * 0.04;
+            ball.vx = (targetAim.x - ball.x) * LAUNCH_COEF;
+            ball.vz = zDiff * LAUNCH_COEF;
             ball.vy = Math.sqrt(2 * GRAVITY * 65); // Parabola tesa ottimale per il rimbalzo
             
             ball.isMoving = true;
@@ -227,7 +240,7 @@
         }
 
         function shareGame() {
-            const shareText = `Ho ripulito il tavolo con fantastici tiri a rimbalzo in ${shots} tiri! Sfidami al torneo ufficiale del 25 Luglio a Calabritto! 🍻🏀`;
+            const shareText = `Ho ripulito il tavolo con fantastici tiri a rimbalzo in ${shots} tiri! Sfidami al torneo ufficiale del 27 Luglio a Calabritto! 🍻🏀`;
             if (navigator.share) {
                 navigator.share({ title: 'Festival Beer Pong', text: shareText, url: window.location.href }).catch(console.error);
             } else {
@@ -242,7 +255,7 @@
             const fov = 260; 
             const scale = fov / (fov + z);
             const screenX = canvas.width / 2 + x * scale;
-            const screenY = canvas.height * 0.35 - (y * scale) + (z * 0.78);
+            const screenY = canvas.height * 0.12 - (y * scale) + (z / Z_DEPTH_RANGE) * canvas.height * 0.83;
             return { x: screenX, y: screenY, size: scale };
         }
 
@@ -261,6 +274,13 @@
         }
 
         function updatePhysics() {
+            frameCount++;
+            cups.forEach(cup => {
+                if (cup.active) {
+                    cup.x = cup.baseX + Math.sin(frameCount * WOBBLE_SPEED + cup.phase) * WOBBLE_AMPLITUDE;
+                }
+            });
+
             particles.forEach((p, idx) => {
                 p.vy -= 0.25; p.x += p.vx; p.y += p.vy; p.z += p.vz; p.alpha -= 0.03;
                 if(p.alpha <= 0) particles.splice(idx, 1);
@@ -349,13 +369,15 @@
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)'; ctx.lineWidth = 2;
             const centerStart = project(0, 0, TABLE_Z_START);
             const centerEnd = project(0, 0, TABLE_Z_END);
-            ctx.beginPath(); ctx.moveTo(centerStart.x, centerStart.y); ctx.lineTo(centerEnd.x, centerEnd.y); stroke();
+            ctx.beginPath(); ctx.moveTo(centerStart.x, centerStart.y); ctx.lineTo(centerEnd.x, centerEnd.y); ctx.stroke();
 
             // MIRINO DI MIRA SUL TAVOLO
             if (!ball.isMoving && !isGameOver) {
                 const pTarget = project(targetAim.x, 0, targetAim.z);
+                const activeCount = cups.filter(c => c.active).length;
+                const aimRadius = 9 + activeCount * 0.9; // si restringe da 14 a 9 man mano che i bicchieri calano
                 ctx.strokeStyle = '#ffb703'; ctx.lineWidth = 3;
-                ctx.beginPath(); ctx.arc(pTarget.x, pTarget.y, 14 * pTarget.size, 0, Math.PI*2); ctx.stroke();
+                ctx.beginPath(); ctx.arc(pTarget.x, pTarget.y, aimRadius * pTarget.size, 0, Math.PI*2); ctx.stroke();
                 ctx.fillStyle = 'rgba(255, 183, 3, 0.2)'; ctx.fill();
             }
 
