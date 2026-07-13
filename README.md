@@ -1,2 +1,0 @@
-# Beer-Pong
-Beer pong
