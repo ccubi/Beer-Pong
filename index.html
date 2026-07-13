@@ -3,34 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Beer Pong Event Edition</title>
+    <title>Beer Pong Event Edition - Bounce Trick</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; touch-action: none; -webkit-user-select: none; user-select: none; }
         body { font-family: 'Segoe UI', Roboto, sans-serif; background: #111; color: white; overflow: hidden; height: 100vh; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 5px; }
         
         /* HEADER EVENTO */
         .event-header {
-            width: 100%; max-width: 360px; background: linear-gradient(135deg, #d90429 0%, #ef233c 100%);
+            width: 100%; max-width: 360px; background: linear-gradient(135deg, #ffb703 0%, #fb8500 100%);
             padding: 8px; margin-bottom: 4px; border-radius: 10px; text-align: center;
-            box-shadow: 0 4px 10px rgba(217, 4, 41, 0.3); border: 2px solid #ffb703; flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(251, 133, 0, 0.3); border: 2px solid #ef233c; flex-shrink: 0;
         }
-        .event-header h1 { font-size: 1.1em; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
-        .event-header p { font-size: 0.75em; color: #ffb703; font-weight: bold; }
+        .event-header h1 { font-size: 1.1em; font-weight: 900; color: #111; text-transform: uppercase; letter-spacing: 1px; }
+        .event-header p { font-size: 0.75em; color: #ef233c; font-weight: bold; }
 
         /* AREA GIOCO */
         .game-wrapper { position: relative; width: 100%; max-width: 360px; flex-grow: 1; background: #1a1a1a; border-radius: 12px; border: 3px solid #333; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         canvas { width: 100%; height: 100%; background: #1e2530; display: block; }
         
-        /* COI CONTROLLI IN BASSO */
+        /* CONTROLLI IN BASSO */
         .ui-bottom { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 6px; margin-top: 4px; background: #222; padding: 8px; border-radius: 10px; border: 1px solid #444; flex-shrink: 0; }
         .stats-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .stat-box { text-align: center; flex: 1; }
         .stat-box span { display: block; font-size: 0.65em; color: #aaa; text-transform: uppercase; }
         .stat-box strong { font-size: 1.1em; color: #ffb703; }
         
-        /* NUOVO PULSANTE DI LANCIO SMARTPHONE */
-        .launch-btn { width: 100%; background: linear-gradient(90deg, #d90429, #ef233c); color: white; border: none; padding: 12px; border-radius: 20px; font-weight: bold; font-size: 1em; text-transform: uppercase; cursor: pointer; box-shadow: 0 4px 10px rgba(217,4,41,0.4); }
-        .launch-btn:active { transform: scale(0.98); background: #d90429; }
+        /* PULSANTE DI LANCIO */
+        .launch-btn { width: 100%; background: linear-gradient(90deg, #ffb703, #fb8500); color: #111; border: none; padding: 12px; border-radius: 20px; font-weight: bold; font-size: 1em; text-transform: uppercase; cursor: pointer; box-shadow: 0 4px 10px rgba(251,133,0,0.4); }
+        .launch-btn:active { transform: scale(0.98); background: #fb8500; }
         
         .btn-reset { background: #444; color: #fff; font-weight: bold; border: none; padding: 6px 12px; border-radius: 12px; cursor: pointer; text-transform: uppercase; font-size: 0.75em; }
         
@@ -51,7 +51,7 @@
         .btn-group { display: flex; flex-direction: column; gap: 6px; width: 100%; max-width: 260px; }
         .social-row { display: flex; gap: 6px; width: 100%; }
         
-        .cta-button { background: linear-gradient(90deg, #2bc0e4, #eaecc6); color: #000; padding: 10px; font-size: 0.85em; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 100%; }
+        .cta-button { background: linear-gradient(90deg, #ffb703, #ffdd00); color: #000; padding: 10px; font-size: 0.85em; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 100%; font-weight: 900; }
         .share-button { background: #00b4d8; color: white; padding: 10px; font-size: 0.85em; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 100%; }
         .btn-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: white; flex: 1; padding: 9px; font-size: 0.75em; border-radius: 15px; border: none; font-weight: bold; text-transform: uppercase; }
         .btn-facebook { background: #1877f2; color: white; flex: 1; padding: 9px; font-size: 0.75em; border-radius: 15px; border: none; font-weight: bold; text-transform: uppercase; }
@@ -63,14 +63,14 @@
 
     <!-- HEADER EVENTO -->
     <div class="event-header">
-        <h1>🔥 BEER PONG 🔥</h1>
-        <p>Tocca per mirare, premi LANCE per tirare! 🍻</p>
+        <h1>🏀 BOUNCE PONG 🏀</h1>
+        <p>⚠️ DEVE RIMBALZARE SUL TAVOLO PER ENTRARE! 🍻</p>
     </div>
     
     <!-- AREA CANVAS -->
     <div class="game-wrapper">
         <canvas id="pongCanvas"></canvas>
-        <div class="instructions" id="instText">TOCCA IL TAVOLO PER SPOSTARE IL MIRINO 🎯</div>
+        <div class="instructions" id="instText">SPOSTA IL MIRINO SUL TAVOLO PER FARE RIMBALZO 🎯</div>
         
         <!-- POPUP FINALE -->
         <div class="popup-screen" id="gameOverScreen">
@@ -79,7 +79,7 @@
                 <span class="f-mid">GIOVANI</span>
                 <span class="f-bot">CALABRITTO</span>
             </div>
-            <h2>CAMPIONE! 🏆</h2>
+            <h2>MAGO DEL RIMBALZO! 🏆</h2>
             <p style="font-size: 0.8em; color: #ccc; margin-bottom: 2px;">Tavolo svuotato in <span id="finalShots" style="color: #ffb703; font-weight: bold;">0</span> tiri!</p>
             
             <div class="promo-box">
@@ -92,7 +92,7 @@
                     <button class="btn-facebook" onclick="openSocial('facebook')">👥 Facebook</button>
                 </div>
                 <button class="share-button" onclick="shareGame()">🔗 Condividi la Sfida</button>
-                <button class="cta-button" onclick="resetGame()" style="background: linear-gradient(90deg, #ffb703, #ffdd00); font-weight: 900;">🔄 Rigioca</button>
+                <button class="cta-button" onclick="resetGame()">🔄 Rigioca</button>
             </div>
         </div>
     </div>
@@ -101,7 +101,7 @@
     <div class="ui-bottom">
         <div class="stats-row">
             <div class="stat-box"><span>Bicchieri</span><strong id="cupsLeft">6</strong></div>
-            <button class="launch-btn" id="btnLaunch" onclick="launchBall()">🔥 LANCIA! 🔥</button>
+            <button class="launch-btn" id="btnLaunch" onclick="launchBall()">🏀 LANCI CON RIMBALZO! 🏀</button>
             <div class="stat-box"><span>Tiri</span><strong id="shotsFired">0</strong></div>
         </div>
         <div style="text-align: center; margin-top: 2px;">
@@ -116,21 +116,20 @@
         const instText = document.getElementById('instText');
         const btnLaunch = document.getElementById('btnLaunch');
         
-        let ball = { x: 0, y: 45, z: 30, vx: 0, vy: 0, vz: 0, r: 16, isMoving: false, trail: [] };
+        let ball = { x: 0, y: 45, z: 30, vx: 0, vy: 0, vz: 0, r: 15, isMoving: false, trail: [] };
         let cups = [];
         let particles = [];
         let scorePopups = [];
         let shots = 0;
         let isGameOver = false;
+        let hasBounced = false; // Controlla se la pallina ha effettuato il rimbalzo obbligatorio
         
-        // Target di mira predefinito
-        let targetAim = { x: 0, z: 400 };
+        let targetAim = { x: 0, z: 240 }; // Mirino di default a metà tavolo
 
-        const GRAVITY = 0.38;
+        const GRAVITY = 0.32;
         const TABLE_Z_START = 80;
         const TABLE_Z_END = 490;
 
-        // INSERISCI I LINK REALI DEL FORUM GIOVANI QUI
         const SOCIAL_LINKS = {
             instagram: 'https://www.instagram.com/', 
             facebook: 'https://www.facebook.com/'     
@@ -149,13 +148,13 @@
             const zRow1 = 445;
             const zRow2 = 400;
             const zRow3 = 355;
-            const cRadius = 28;
+            const cRadius = 26;
             
-            cups.push({ x: -56, y: 0, z: zRow1, r: cRadius, active: true });
+            cups.push({ x: -52, y: 0, z: zRow1, r: cRadius, active: true });
             cups.push({ x: 0,   y: 0, z: zRow1, r: cRadius, active: true });
-            cups.push({ x: 56,  y: 0, z: zRow1, r: cRadius, active: true });
-            cups.push({ x: -28, y: 0, z: zRow2, r: cRadius, active: true });
-            cups.push({ x: 28,  y: 0, z: zRow2, r: cRadius, active: true });
+            cups.push({ x: 52,  y: 0, z: zRow1, r: cRadius, active: true });
+            cups.push({ x: -26, y: 0, z: zRow2, r: cRadius, active: true });
+            cups.push({ x: 26,  y: 0, z: zRow2, r: cRadius, active: true });
             cups.push({ x: 0,   y: 0, z: zRow3, r: cRadius, active: true });
         }
 
@@ -164,6 +163,7 @@
             ball.vx = 0; ball.vy = 0; ball.vz = 0;
             ball.isMoving = false;
             ball.trail = [];
+            hasBounced = false; // Resetta lo stato del rimbalzo
             btnLaunch.style.opacity = "1";
             btnLaunch.disabled = false;
         }
@@ -172,7 +172,7 @@
             shots = 0; isGameOver = false;
             initCups(); resetBall(); updateUI();
             particles = []; scorePopups = [];
-            targetAim = { x: 0, z: 400 };
+            targetAim = { x: 0, z: 240 };
             gameOverScreen.style.display = 'none';
         }
 
@@ -186,7 +186,6 @@
             }
         }
 
-        // GESTIONE TOCCO SUL TAVOLO PER MIRARE
         canvas.addEventListener('touchstart', handleAim);
         canvas.addEventListener('touchmove', handleAim);
         
@@ -197,32 +196,30 @@
             const touchX = (e.touches[0].clientX - rect.left) * (canvas.width / rect.width);
             const touchY = (e.touches[0].clientY - rect.top) * (canvas.height / rect.height);
             
-            // Converte il tocco X/Y dello schermo in coordinate 3D del tavolo approssimative
-            targetAim.x = ((touchX - canvas.width / 2) / (canvas.width / 2)) * 110;
-            // Mappa l'altezza del tocco sull'asse Z del tavolo
-            const pctY = 1 - (touchY / canvas.height);
-            targetAim.z = TABLE_Z_START + (pctY * (TABLE_Z_END - TABLE_Z_START) * 1.5);
+            targetAim.x = ((touchX - canvas.width / 2) / (canvas.width / 2)) * 100;
             
-            // Limiti di sicurezza per la mira
-            if(targetAim.z < 250) targetAim.z = 250;
-            if(targetAim.z > TABLE_Z_END + 40) targetAim.z = TABLE_Z_END + 40;
-            if(targetAim.x < -80) targetAim.x = -80;
-            if(targetAim.x > 80) targetAim.x = 80;
+            const pctY = 1 - (touchY / canvas.height);
+            // Limitiamo il mirino sul tavolo per aiutare il giocatore a scegliere il punto di rimbalzo
+            targetAim.z = TABLE_Z_START + (pctY * (TABLE_Z_END - TABLE_Z_START) * 1.1);
+            
+            if(targetAim.z < 120) targetAim.z = 120;
+            if(targetAim.z > 360) targetAim.z = 360; // Impedisce di mirare direttamente oltre i bicchieri
+            if(targetAim.x < -70) targetAim.x = -70;
+            if(targetAim.x > 70) targetAim.x = 70;
         }
 
-        // FUNZIONE DI LANCIO ATTIVATA DAL PULSANTIERA
         function launchBall() {
             if (ball.isMoving || isGameOver) return;
             
-            // Calcola la traiettoria fisica in base alla posizione del mirino
-            ball.vx = targetAim.x * 0.042;
-            
-            // Calcola la spinta in profondità e altezza in base alla distanza Z del mirino
             const zDiff = targetAim.z - ball.z;
-            ball.vz = zDiff * 0.044;
-            ball.vy = Math.sqrt(zDiff) * 0.95; 
+            
+            // Calcolo matematico per far atterrare la pallina esattamente sul mirino per il primo rimbalzo
+            ball.vx = (targetAim.x - ball.x) * 0.04;
+            ball.vz = zDiff * 0.04;
+            ball.vy = Math.sqrt(2 * GRAVITY * 65); // Parabola tesa ottimale per il rimbalzo
             
             ball.isMoving = true;
+            hasBounced = false;
             shots++;
             btnLaunch.style.opacity = "0.3";
             btnLaunch.disabled = true;
@@ -230,7 +227,7 @@
         }
 
         function shareGame() {
-            const shareText = `Ho svuotato il tavolo di Beer Pong in ${shots} tiri! Ti sfido al torneo ufficiale del 25 Luglio a Calabritto! Ce la fai a fare di meglio? 🍻🎯`;
+            const shareText = `Ho ripulito il tavolo con fantastici tiri a rimbalzo in ${shots} tiri! Sfidami al torneo ufficiale del 25 Luglio a Calabritto! 🍻🏀`;
             if (navigator.share) {
                 navigator.share({ title: 'Festival Beer Pong', text: shareText, url: window.location.href }).catch(console.error);
             } else {
@@ -254,7 +251,7 @@
                 particles.push({
                     x: x, y: 10, z: z,
                     vx: (Math.random() - 0.5) * 5,
-                    vy: Math.random() * 4 + 4,
+                    vy: Math.random() * 4 + 3,
                     vz: (Math.random() - 0.5) * 5,
                     color: i % 2 === 0 ? '#ffb703' : '#ffffff',
                     alpha: 1,
@@ -284,33 +281,48 @@
             ball.y += ball.vy;
             ball.z += ball.vz;
 
-            // Rimbalzo sul tavolo
+            // RIMBALZO SUL TAVOLO (Fondamentale!)
             if (ball.y <= 0 && ball.z >= TABLE_Z_START && ball.z <= TABLE_Z_END) {
                 ball.y = 0;
-                ball.vy = -ball.vy * 0.70; 
-                ball.vx *= 0.95;
-                ball.vz *= 0.95;
+                ball.vy = -ball.vy * 0.75; // Mantiene una buona spinta verso l'alto dopo il rimbalzo
+                ball.vx *= 0.92;
+                ball.vz *= 0.92;
+                hasBounced = true; // Sblocca la possibilità di fare punto!
+                
+                // Effetto grafico del rimbalzo sul tavolo
+                const scrPos = project(ball.x, 0, ball.z);
+                scorePopups.push({ x: scrPos.x, y: scrPos.y - 5, text: "💥 BOUNCE!", alpha: 0.7 });
             }
 
-            // Controllo collisione bicchieri
-            if (ball.vy < 0 && ball.y > -5 && ball.y < 30) {
+            // CONTROLLO ENTRATA NEI BICCHIERI
+            if (ball.vy < 0 && ball.y > -5 && ball.y < 35) {
                 cups.forEach(cup => {
                     if (!cup.active) return;
                     const distXZ = Math.hypot(ball.x - cup.x, ball.z - cup.z);
                     
-                    if (distXZ < cup.r * 0.82 && ball.y <= 12) {
-                        cup.active = false;
-                        createSplash(cup.x, cup.z);
-                        const scrPos = project(cup.x, cup.y + 35, cup.z);
-                        scorePopups.push({ x: scrPos.x, y: scrPos.y - 10, text: "🍺 CENTRATO! 💥", alpha: 1 });
-                        resetBall();
-                        updateUI();
+                    if (distXZ < cup.r * 0.95 && ball.y <= 22) {
+                        if (hasBounced) {
+                            // HA RIMBALZATO: PUNTO VALIDATO!
+                            cup.active = false;
+                            createSplash(cup.x, cup.z);
+                            const scrPos = project(cup.x, cup.y + 35, cup.z);
+                            scorePopups.push({ x: scrPos.x, y: scrPos.y - 10, text: "🍺 RIMBALZO PERFETTO! 💥", alpha: 1 });
+                            resetBall();
+                            updateUI();
+                        } else {
+                            // NON HA RIMBALZATO: Vola via (Malus No-Bounce)
+                            ball.vy = 3.5; 
+                            ball.vx += (ball.x - cup.x) * 0.1 + (Math.random() - 0.5) * 2;
+                            ball.vz += 2;
+                            const scrPos = project(cup.x, cup.y + 35, cup.z);
+                            scorePopups.push({ x: scrPos.x, y: scrPos.y - 10, text: "❌ NESSUN RIMBALZO!", alpha: 0.9 });
+                        }
                     } 
                 });
             }
 
-            // Fuori campo
-            if (ball.z > TABLE_Z_END + 60 || ball.y < -25 || Math.abs(ball.x) > 150) {
+            // Reset se esce fuori dai bordi
+            if (ball.z > TABLE_Z_END + 80 || ball.y < -25 || Math.abs(ball.x) > 160) {
                 resetBall();
             }
         }
@@ -318,11 +330,9 @@
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Disegna il pavimento/sfondo scuro
             ctx.fillStyle = '#161920';
             ctx.fillRect(0, canvas.height * 0.25, canvas.width, canvas.height * 0.75);
 
-            // Tavolo prospettico
             const tLeftStart = project(-90, 0, TABLE_Z_START);
             const tRightStart = project(90, 0, TABLE_Z_START);
             const tLeftEnd = project(-55, 0, TABLE_Z_END);
@@ -336,21 +346,19 @@
             
             ctx.strokeStyle = '#5c2c0e'; ctx.lineWidth = 4; ctx.stroke();
 
-            // Linea centrale mezzeria
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)'; ctx.lineWidth = 2;
             const centerStart = project(0, 0, TABLE_Z_START);
             const centerEnd = project(0, 0, TABLE_Z_END);
-            ctx.beginPath(); ctx.moveTo(centerStart.x, centerStart.y); ctx.lineTo(centerEnd.x, centerEnd.y); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(centerStart.x, centerStart.y); ctx.lineTo(centerEnd.x, centerEnd.y); stroke();
 
-            // MIRINO DI MIRA (se la pallina è ferma)
+            // MIRINO DI MIRA SUL TAVOLO
             if (!ball.isMoving && !isGameOver) {
                 const pTarget = project(targetAim.x, 0, targetAim.z);
-                ctx.strokeStyle = '#ef233c'; ctx.lineWidth = 3;
+                ctx.strokeStyle = '#ffb703'; ctx.lineWidth = 3;
                 ctx.beginPath(); ctx.arc(pTarget.x, pTarget.y, 14 * pTarget.size, 0, Math.PI*2); ctx.stroke();
-                ctx.fillStyle = 'rgba(239, 35, 60, 0.2)'; ctx.fill();
+                ctx.fillStyle = 'rgba(255, 183, 3, 0.2)'; ctx.fill();
             }
 
-            // Particelle dello splash
             particles.forEach(p => {
                 const pt = project(p.x, p.y, p.z);
                 ctx.fillStyle = p.color; ctx.globalAlpha = p.alpha;
@@ -358,7 +366,6 @@
             });
             ctx.globalAlpha = 1.0;
 
-            // Disegna bicchieri
             cups.sort((a,b) => b.z - a.z);
             cups.forEach(cup => {
                 const p = project(cup.x, cup.y, cup.z);
@@ -380,7 +387,6 @@
                 }
             });
 
-            // Scia pallina
             if (ball.isMoving) {
                 ball.trail.forEach((t, i) => {
                     const pt = project(t.x, t.y, t.z);
@@ -389,7 +395,6 @@
                 });
             }
 
-            // Disegna pallina e ombra
             const pBall = project(ball.x, ball.y, ball.z);
             const ballSize = ball.r * pBall.size;
 
@@ -403,7 +408,6 @@
             ctx.beginPath(); ctx.arc(pBall.x, pBall.y, ballSize, 0, Math.PI * 2); ctx.fill();
             ctx.strokeStyle = '#bbb'; ctx.lineWidth = 1.5; ctx.stroke();
 
-            // Testi popup temporanei
             scorePopups.forEach(pop => {
                 ctx.fillStyle = `rgba(255, 183, 3, ${pop.alpha})`;
                 ctx.font = 'bold 15px sans-serif'; ctx.textAlign = 'center';
