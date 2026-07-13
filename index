@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Beer Pong Event Edition</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background: #111; color: white; overflow: hidden; }
+        
+        .container { max-width: 800px; margin: 0 auto; padding: 10px; display: flex; flex-direction: column; align-items: center; height: 100vh; justify-content: center; }
+        
+        /* HEADER EVENTO */
+        .event-header {
+            width: 100%; max-width: 430px; background: linear-gradient(135deg, #d90429 0%, #ef233c 100%);
+            padding: 12px; margin-bottom: 8px; border-radius: 12px; text-align: center;
+            box-shadow: 0 4px 15px rgba(217, 4, 41, 0.4); border: 2px solid #ffb703;
+        }
+        .event-header h1 { font-size: 1.4em; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
+        .event-header p { font-size: 0.85em; color: #ffb703; font-weight: bold; margin-top: 2px; }
+
+        .game-wrapper { position: relative; width: 100%; max-width: 430px; aspect-ratio: 3 / 4; background: #1a1a1a; border-radius: 16px; border: 4px solid #333; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
+        canvas { width: 100%; height: 100%; background: #1e2530; }
+        
+        .ui-bottom { width: 100%; max-width: 430px; display: flex; justify-content: space-between; align-items: center; margin-top: 8px; background: #222; padding: 12px; border-radius: 12px; border: 1px solid #444; }
+        .stat-box { text-align: center; flex: 1; }
+        .stat-box span { display: block; font-size: 0.75em; color: #aaa; text-transform: uppercase; }
+        .stat-box strong { font-size: 1.4em; color: #ffb703; }
+        
+        button { background: #ffb703; color: #000; font-weight: bold; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; text-transform: uppercase; font-size: 0.85em; box-shadow: 0 3px 6px rgba(0,0,0,0.3); }
+        
+        /* SCREEN FINE GIOCO / PUBBLICITÀ TORNEO */
+        .popup-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 10, 15, 0.98); display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; z-index: 10; }
+        .popup-screen h2 { color: #ffb703; font-size: 2.2em; margin-bottom: 2px; font-weight: 900; text-shadow: 0 2px 10px rgba(255,183,3,0.3); }
+        
+        /* LOGO FORUM DI CALABRITTO VEGATORIALE */
+        .forum-logo {
+            width: 60px; height: 60px; border: 2px solid #ffb703; border-radius: 50%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: #000; box-shadow: 0 0 12px rgba(255, 183, 3, 0.4); margin-bottom: 8px;
+        }
+        .forum-logo .f-top { font-size: 9px; color: #aaa; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; line-height: 1; }
+        .forum-logo .f-mid { font-size: 14px; color: #fff; font-weight: 900; letter-spacing: 0.5px; line-height: 1.1; }
+        .forum-logo .f-bot { font-size: 7px; color: #ef233c; font-weight: bold; text-transform: uppercase; line-height: 1; }
+
+        .promo-box {
+            background: linear-gradient(135deg, #1e1e2f 0%, #11111a 100%);
+            border: 2px dashed #ffb703; padding: 15px; border-radius: 14px; margin: 10px 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5); width: 100%;
+        }
+        .promo-text { color: #fff; font-size: 1.1em; font-weight: bold; line-height: 1.4; text-transform: uppercase; }
+        .promo-highlight { color: #ef233c; font-size: 1.25em; font-weight: 900; display: block; margin-top: 5px; letter-spacing: 0.5px; }
+
+        /* GRUPPI DI PULSANTI */
+        .btn-group { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 290px; margin-top: 5px; }
+        .social-row { display: flex; gap: 8px; width: 100%; }
+        
+        .cta-button { background: linear-gradient(90deg, #d90429, #ef233c); color: white; padding: 12px 20px; font-size: 1em; border-radius: 25px; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(217,4,41,0.4); text-transform: uppercase; width: 100%; }
+        .share-button { background: #00b4d8; color: white; padding: 12px 20px; font-size: 0.95em; border-radius: 25px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 12px rgba(0,180,216,0.3); width: 100%; }
+        
+        .btn-instagram { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white; flex: 1; padding: 10px; font-size: 0.85em; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .btn-facebook { background: #1877f2; color: white; flex: 1; padding: 10px; font-size: 0.85em; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+
+        .instructions { position: absolute; bottom: 20px; left: 0; width: 100%; text-align: center; color: #ffb703; font-weight: bold; font-size: 0.9em; pointer-events: none; text-shadow: 0 2px 4px rgba(0,0,0,0.8); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <!-- HEADER EVENTO -->
+        <div class="event-header">
+            <h1>🔥 BEER PONG 🔥</h1>
+            <p>Tira e svuota il tavolo per vincere! 🍻</p>
+        </div>
+        
+        <div class="game-wrapper">
+            <canvas id="pongCanvas" width="450" height="600"></canvas>
+            <div class="instructions" id="instText">TIRA INDIETRO E LASCIA PER LANCIARE! 🎯</div>
+            
+            <!-- SCHERMATA FINALE CON PUBBLICITÀ E CONDIVISIONE -->
+            <div class="popup-screen" id="gameOverScreen">
+                
+                <!-- LOGO DEL FORUM STILIZZATO -->
+                <div class="forum-logo">
+                    <span class="f-top">FORUM</span>
+                    <span class="f-mid">GIOVANI</span>
+                    <span class="f-bot">CALABRITTO</span>
+                </div>
+
+                <h2>CAMPIONE! 🏆</h2>
+                <p style="font-size: 0.9em; color: #ccc; margin-bottom: 5px;">Tavolo svuotato in <span id="finalShots" style="color: #ffb703; font-weight: bold;">0</span> tiri!</p>
+                
+                <div class="promo-box">
+                    <p class="promo-text">
+                        Sfida un amico al torneo ufficiale di Beer Pong
+                        <span class="promo-highlight">del 25 Luglio a Calabritto!</span>
+                    </p>
+                </div>
+
+                <!-- NUOVI PULSANTI SOCIAL + CONDIVISIONE E RIGIOCA -->
+                <div class="btn-group">
+                    <div class="social-row">
+                        <button class="btn-instagram" onclick="openSocial('instagram')">📸 Instagram</button>
+                        <button class="btn-facebook" onclick="openSocial('facebook')">👥 Facebook</button>
+                    </div>
+                    <button class="share-button" onclick="shareGame()">🔗 Condividi la Sfida</button>
+                    <button class="cta-button" onclick="resetGame()">🔄 Rigioca</button>
+                </div>
+                
+                <p style="font-size: 0.7em; color: #aaa; margin-top: 15px;">Guarda la locandina ufficiale sui nostri social!</p>
+            </div>
+        </div>
+
+        <div class="ui-bottom">
+            <div class="stat-box"><span>Bicchieri</span><strong id="cupsLeft">6</strong></div>
+            <div class="stat-box"><span>Tiri</span><strong id="shotsFired">0</strong></div>
+            <div class="stat-box"><button onclick="resetGame()">Reset</button></div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('pongCanvas');
+        const ctx = canvas.getContext('2d');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const instText = document.getElementById('instText');
+        
+        let ball = { x: 0, y: 45, z: 30, vx: 0, vy: 0, vz: 0, r: 18, isMoving: false, trail: [] };
+        let cups = [];
+        let particles = [];
+        let scorePopups = [];
+        let shots = 0;
+        let isGameOver = false;
+        
+        let sling = { startX: 0, startY: 0, currentX: 0, currentY: 0, isDown: false };
+        let ballStaticTimer = 0; 
+
+        const GRAVITY = 0.36;
+        const TABLE_Z_START = 80;
+        const TABLE_Z_END = 490;
+
+        // INSERISCI QUI I LINK REALI ALLE VOSTRE PAGINE SOCIAL
+        const SOCIAL_LINKS = {
+            instagram: 'https://www.instagram.com/forumdeigiovani_calabritto/p/Dam6v0rMNQp/'
+            facebook: 'https://www.facebook.com/photo?fbid=1879115313414163&set=a.771761970816175'
+        };
+        
+        function initCups() {
+            cups = [];
+            const zRow1 = 445;
+            const zRow2 = 400;
+            const zRow3 = 355;
+            const cRadius = 32;
+            
+            cups.push({ x: -66, y: 0, z: zRow1, r: cRadius, active: true });
+            cups.push({ x: 0,   y: 0, z: zRow1, r: cRadius, active: true });
+            cups.push({ x: 66,  y: 0, z: zRow1, r: cRadius, active: true });
+            cups.push({ x: -33, y: 0, z: zRow2, r: cRadius, active: true });
+            cups.push({ x: 33,  y: 0, z: zRow2, r: cRadius, active: true });
+            cups.push({ x: 0,   y: 0, z: zRow3, r: cRadius, active: true });
+        }
+
+        function resetBall() {
+            ball.x = 0; ball.y = 50; ball.z = 30; 
+            ball.vx = 0; ball.vy = 0; ball.vz = 0;
+            ball.isMoving = false;
+            ball.trail = [];
+            ballStaticTimer = 0;
+            instText.style.display = 'block';
+        }
+
+        function resetGame() {
+            shots = 0; isGameOver = false;
+            initCups(); resetBall(); updateUI();
+            particles = []; scorePopups = [];
+            gameOverScreen.style.display = 'none';
+        }
+
+        function updateUI() {
+            const active = cups.filter(c => c.active).length;
+            document.getElementById('cupsLeft').textContent = active;
+            document.getElementById('shotsFired').textContent = shots;
+            if(active === 0 && !isGameOver) {
+                isGameOver = true;
+                setTimeout(() => { gameOverScreen.style.display = 'flex'; document.getElementById('finalShots').textContent = shots; }, 500);
+            }
+        }
+
+        function shareGame() {
+            const shareText = `Ho svuotato il tavolo di Beer Pong in ${shots} tiri! Ti sfido al torneo ufficiale del 25 Luglio a Calabritto! Ce la fai a fare meglio di me? 🍻🎯`;
+            if (navigator.share) {
+                navigator.share({ title: 'Festival Beer Pong', text: shareText, url: window.location.href }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(shareText);
+                alert("Testo di sfida copiato negli appunti! Incollalo su WhatsApp o dove vuoi per sfidare i tuoi amici. 🔥");
+            }
+        }
+
+        function openSocial(platform) {
+            window.open(SOCIAL_LINKS[platform], '_blank');
+        }
+
+        function project(x, y, z) {
+            const fov = 280; 
+            const scale = fov / (fov + z);
+            const screenX = canvas.width / 2 + x * scale;
+            const screenY = canvas.height * 0.40 - (y * scale) + (z * 0.74);
+            return { x: screenX, y: screenY, size: scale };
+        }
+
+        function getCanvasPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: (clientX - rect.left) * (canvas.width / rect.width),
+                y: (clientY - rect.top) * (canvas.height / rect.height)
+            };
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            if (ball.isMoving || isGameOver) return;
+            const pos = getCanvasPos(e);
+            sling.startX = pos.x; sling.startY = pos.y;
+            sling.currentX = pos.x; sling.currentY = pos.y;
+            sling.isDown = true;
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!sling.isDown) return;
+            const pos = getCanvasPos(e);
+            sling.currentX = pos.x; sling.currentY = pos.y;
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (!sling.isDown) return;
+            sling.isDown = false;
+            
+            const dx = sling.startX - sling.currentX;
+            const dy = sling.currentY - sling.startY;
+            
+            if (dy > 15) { 
+                ball.vx = dx * 0.046; 
+                ball.vy = Math.min(15, dy * 0.105); 
+                ball.vz = Math.min(19, dy * 0.120); 
+                ball.isMoving = true;
+                shots++;
+                instText.style.display = 'none';
+                updateUI();
+            }
+        });
+
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); const mE = e.touches[0]; canvas.dispatchEvent(new MouseEvent('mousedown', {clientX: mE.clientX, clientY: mE.clientY})); });
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); const mE = e.touches[0]; canvas.dispatchEvent(new MouseEvent('mousemove', {clientX: mE.clientX, clientY: mE.clientY})); });
+        window.addEventListener('touchend', () => { window.dispatchEvent(new MouseEvent('mouseup')); });
+
+        function createSplash(x, z) {
+            for(let i=0; i<25; i++) {
+                particles.push({
+                    x: x, y: 12, z: z,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: Math.random() * 5 + 4,
+                    vz: (Math.random() - 0.5) * 6,
+                    color: i % 2 === 0 ? '#ffb703' : '#ffffff',
+                    alpha: 1,
+                    size: Math.random() * 4 + 2
+                });
+            }
+        }
+
+        function updatePhysics() {
+            particles.forEach((p, idx) => {
+                p.vy -= 0.22; p.x += p.vx; p.y += p.vy; p.z += p.vz; p.alpha -= 0.025;
+                if(p.alpha <= 0) particles.splice(idx, 1);
+            });
+
+            scorePopups.forEach((pop, idx) => {
+                pop.y -= 1; pop.alpha -= 0.02;
+                if(pop.alpha <= 0) scorePopups.splice(idx, 1);
+            });
+
+            if (!ball.isMoving) return;
+
+            ball.trail.push({x: ball.x, y: ball.y, z: ball.z});
+            if(ball.trail.length > 5) ball.trail.shift();
+
+            ball.vy -= GRAVITY;
+            ball.x += ball.vx;
+            ball.y += ball.vy;
+            ball.z += ball.vz;
+
+            if (ball.y <= 0 && ball.z >= TABLE_Z_START && ball.z <= TABLE_Z_END) {
+                ball.y = 0;
+                ball.vy = -ball.vy * 0.72; 
+                ball.vx *= 0.94;
+                ball.vz *= 0.96;
+                
+                if (Math.abs(ball.vz) < 1.5 && Math.abs(ball.vy) < 1.0) {
+                    ballStaticTimer += 1;
+                }
+            }
+
+            if (ballStaticTimer > 70) {
+                resetBall();
+            }
+
+            if (ball.vy < 0 && ball.y > -5 && ball.y < 35) {
+                cups.forEach(cup => {
+                    if (!cup.active) return;
+                    const distXZ = Math.hypot(ball.x - cup.x, ball.z - cup.z);
+                    
+                    if (distXZ < cup.r * 1.3 && ball.y < 25) {
+                        ball.x = ball.x * 0.72 + cup.x * 0.28;
+                    }
+
+                    if (distXZ < cup.r * 0.85 && ball.y <= 15) {
+                        cup.active = false;
+                        createSplash(cup.x, cup.z);
+                        const scrPos = project(cup.x, cup.y + 40, cup.z);
+                        scorePopups.push({ x: scrPos.x, y: scrPos.y - 15, text: "🍺 AGGHIACCIANTE! 💥", alpha: 1 });
+                        resetBall();
+                        updateUI();
+                    } 
+                });
+            }
+
+            if (ball.z > TABLE_Z_END + 80 || ball.y < -30 || Math.abs(ball.x) > 180) {
+                resetBall();
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#161920';
+            ctx.fillRect(0, canvas.height * 0.3, canvas.width, canvas.height * 0.7);
+
+            const tLeftStart = project(-110, 0, TABLE_Z_START);
+            const tRightStart = project(110, 0, TABLE_Z_START);
+            const tLeftEnd = project(-65, 0, TABLE_Z_END);
+            const tRightEnd = project(65, 0, TABLE_Z_END);
+
+            ctx.fillStyle = '#8B4513';
+            ctx.beginPath();
+            ctx.moveTo(tLeftStart.x, tLeftStart.y); ctx.lineTo(tRightStart.x, tRightStart.y);
+            ctx.lineTo(tRightEnd.x, tRightEnd.y); ctx.lineTo(tLeftEnd.x, tLeftEnd.y);
+            ctx.closePath(); ctx.fill();
+            
+            ctx.strokeStyle = '#5c2c0e';
+            ctx.lineWidth = 6;
+            ctx.stroke();
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+            ctx.lineWidth = 3;
+            const centerStart = project(0, 0, TABLE_Z_START);
+            const centerEnd = project(0, 0, TABLE_Z_END);
+            ctx.beginPath(); ctx.moveTo(centerStart.x, centerStart.y); ctx.lineTo(centerEnd.x, centerEnd.y); ctx.stroke();
+
+            particles.forEach(p => {
+                const pt = project(p.x, p.y, p.z);
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.alpha;
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, p.size * pt.size, 0, Math.PI*2); ctx.fill();
+            });
+            ctx.globalAlpha = 1.0;
+
+            cups.sort((a,b) => b.z - a.z);
+            cups.forEach(cup => {
+                const p = project(cup.x, cup.y, cup.z);
+                const size = cup.r * p.size;
+                
+                if (cup.active) {
+                    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+                    ctx.beginPath(); ctx.ellipse(p.x, p.y, size, size * 0.3, 0, 0, Math.PI*2); ctx.fill();
+
+                    ctx.fillStyle = '#d90429';
+                    ctx.fillRect(p.x - size, p.y, size * 2, size * 1.8);
+                    ctx.beginPath(); ctx.arc(p.x, p.y + size * 1.8, size, 0, Math.PI); ctx.fill();
+
+                    ctx.fillStyle = '#f8f9fa';
+                    ctx.beginPath(); ctx.ellipse(p.x, p.y, size, size * 0.35, 0, 0, Math.PI * 2); ctx.fill();
+
+                    ctx.fillStyle = '#ffb703';
+                    ctx.beginPath(); ctx.ellipse(p.x, p.y + 3, size * 0.88, size * 0.28, 0, 0, Math.PI * 2); ctx.fill();
+                } else {
+                    ctx.strokeStyle = 'rgba(255, 183, 3, 0.2)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath(); ctx.ellipse(p.x, p.y, size, size*0.3, 0, 0, Math.PI*2); ctx.stroke();
+                }
+            });
+
+            // AREA DI TRASCINAMENTO (LINEA DI MIRA)
+            if (sling.isDown && !ball.isMoving) {
+                const dx = sling.startX - sling.currentX;
+                const dy = sling.currentY - sling.startY;
+                
+                ctx.strokeStyle = '#ffb703';
+                ctx.lineWidth = 4;
+                ctx.setLineDash([6, 4]);
+                ctx.beginPath();
+                ctx.moveTo(sling.startX, sling.startY);
+                ctx.lineTo(sling.currentX, sling.currentY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                const estX = (dx * 0.36);
+                const estZ = TABLE_Z_START + (dy * 2.15);
+                const pTarget = project(estX, 0, estZ);
+                
+                ctx.fillStyle = 'rgba(217, 4, 41, 0.3)';
+                ctx.beginPath(); ctx.arc(pTarget.x, pTarget.y, 20, 0, Math.PI*2); ctx.fill();
+                ctx.strokeStyle = '#d90429'; ctx.lineWidth = 2; ctx.stroke();
+            }
+
+            if (ball.isMoving) {
+                ball.trail.forEach((t, i) => {
+                    const pt = project(t.x, t.y, t.z);
+                    ctx.fillStyle = `rgba(248, 249, 250, ${0.12 * (i+1)})`;
+                    ctx.beginPath(); ctx.arc(pt.x, pt.y, ball.r * pt.size, 0, Math.PI*2); ctx.fill();
+                });
+            }
+
+            const pBall = project(ball.x, ball.y, ball.z);
+            const ballSize = ball.r * pBall.size;
+
+            if (ball.z >= TABLE_Z_START && ball.z <= TABLE_Z_END && ball.y > 0) {
+                const pShadow = project(ball.x, 0, ball.z);
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.beginPath(); ctx.ellipse(pShadow.x, pShadow.y, ballSize, ballSize * 0.3, 0, 0, Math.PI * 2); ctx.fill();
+            }
+
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath(); ctx.arc(pBall.x, pBall.y, ballSize, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#ccc';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            scorePopups.forEach(pop => {
+                ctx.fillStyle = `rgba(255, 183, 3, ${pop.alpha})`;
+                ctx.font = 'bold 18px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(pop.text, pop.x, pop.y);
+            });
+        }
+
+        function gameLoop() {
+            updatePhysics();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        initCups();
+        resetBall();
+        updateUI();
+        gameLoop();
+    </script>
+</body>
+</html>
